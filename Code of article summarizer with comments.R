@@ -4,6 +4,19 @@
 ##vishakha Khandeker (vishakakhandekar@gmail.com) ( Team representative)
 
 
+###############abstract#######
+# This project is a document summarizer which summarises an article into few lines.
+#The project is working on text rank algorithm. First the model is trained using latent drichlet allocation.
+#The Lda model gives three matrix- theta, gamma and phi. 
+#The lda converts the training documents into topics to create resemblance among the documents. 
+#In other words the Lda model creates word embeddings.Then the model is used on the artcile which has to be summarized. 
+#Here the matrix gamma is used directly instead of predict function because the gamma matrix yields higher accuracy.
+#After applying the model, the new matrix shows the probabilty of occurence of one sentence after another.
+#Finally the matrix is converted into graph where nodes are sentences and the edges are the words.
+#The nodes are assigned a number or weight through eigen vector centrality.
+#This gives ranks to the sentences and the top sentences are returend as a result.
+
+
 ##Loading required libraries
 
 library(shiny)
