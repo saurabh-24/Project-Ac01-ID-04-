@@ -1,12 +1,12 @@
 ---
-title: "Project AC 01  "
+title: "Project AC 01 (Team Id 04) "
 author: "Saurabh Yadav and Vishakha khandeker"
 date: "17 July 2019"
 output: html_document
 ---
 
 ##Team AC01
-### Team members 
+### Team members
 
 ####1. Vishakha khandeker (Team representative)  (vishakakhandekar@gmail.com) 
 ####2. Saurabh Yadav (saurabhy506@gmail.com)
@@ -15,27 +15,55 @@ output: html_document
 
 ####This project is document summarizer which summarises an article into few lines. The project is working on text rank algorithm. First the model is trained using latent drichlet allocation. The Lda model three matrix- theta, gamma and phi. the lda converts the training documents into topics to create resemblance among the documents. In other words the Lda model creates word embeddings.Then the model is used on the artcile which has to be sumarized. Here the matrix gamma is used directly instead of function predict because the gamma matrix yield higher accuracy.After applying the model the matrix shows the probabilty of occurence of one sentence after another. Finally the matrix is converted into graph where nodes are sentences and the edges are the words.The nodes are assigned a number or weight through eigen vector centrality.This gives ranks to the sentences and the top sentences are returend as a result. 
 
+##Dependencies
+####This whole code require a gamma matrix which can be produced by using the lda model. The number of articles used to train the model is nearly 300 to increase the efficiency. So the size of trained model is very large (34MB).
+
+##Instructions to run the code
+
+###Step1- Collect the artcile and assign it to train variable
+###Step2- Use the summarizer2 function. In this the first argument is your document which should be summarise and the second argument is the number of sentences you want your article to be summarised in.
+
+
 
 
 ###Loading the required libraries
 
-```{r , eval=FALSE}
-library(shiny)
+```{r,warning=FALSE,message=FALSE}
+
 library(text2vec)
 library(textmineR)
 library(igraph)
 library(data.table)
 library(Matrix)
+
+
+```
+
+###loading the required document
+```{r,eval=FALSE}
+document<-read.delim("artcleclimate.txt")
+
+
 ```
 
 
+```{r,echo=FALSE}
+gamma<-fread("gamma.csv")
+gamma<-as.matrix(gamma)
+document<-c("New York lawmakers have agreed to pass a sweeping climate plan that calls for the state to all but eliminate its greenhouse gas emissions by 2050, envisioning an era when gas-guzzling cars, oil-burning heaters and furnaces would be phased out, and all of the state's electricity would come from carbon-free sources.  Under an agreement reached this week between legislative leaders and Gov. Andrew M. Cuomo, the Climate Leadership and Community Protection Act would require the state to slash its planet-warming pollution 85 percent below 1990 levels by 2050, and offset the remaining 15 percent, possibly through measures to remove carbon dioxide from the atmosphere. If the state manages to hit those targets, it would effectively create a so-called net-zero economy, the ultimate goal of environmentalists and others seeking to slow the pace of global warming. Many Democratic-led states have passed laws designed to reduce their greenhouse gas emissions, in response to the Trump administration's sustained efforts to loosen or abandon environmental regulations on power plants and vehicles.  But New York's bill, which comes amid a number of Democratic presidential candidates proposing net-zero targets for the United States, would set one of the most ambitious climate targets by a legislature anywhere in the world.  This unquestionably puts New York in a global leadership position, said Jesse Jenkins, an energy expert and postdoctoral fellow at Harvard University.  The challenges of reaching such goals are daunting. New York has so far only managed to reduce its emissions 8 percent between 1990 and 2015, according to the most recent state inventory. New Yorkers are going to pay a lot for their electricity because of this bill, said Gavin Donohue, the president of the Independent Power Producers of New York, whose members produce about three-quarters of the state's electricity. There's no doubt about that.There are also numerous questions about whether the energy, real estate and business communities can adapt by 2050, and how much it would cost to do so. Business groups in the state had derided the bill as impractical and potentially disastrous for companies forced to move to green energy sources.  The bill requires New York to get 70 percent of its electricity from renewable sources like wind, solar and hydropower by 2030 and shift entirely to carbon-free power a decade later.  But every corner of the state's economy would need to become drastically cleaner, including industrial facilities, heating for residential homes and office buildings and the transportation system, including approximately 10 million cars, trucks and buses. New York currently produces about 60 percent of its electricity from carbon-free sources, mostly from hydroelectric dams and nuclear power plants, with small amounts of wind and solar power. To help meet its new targets, the state plans to erect massive offshore wind turbines, ramp up rooftop solar programs and install large new batteries to juggle all that renewable power. But transportation, which makes up one-third of the state's emissions, will be tougher to tackle. The Trump administration is seeking to roll back federal vehicle efficiency rules and prevent states, like New York, from setting their own stricter standards. And about one-quarter of New York's emissions come from homes and commercial buildings, which typically burn natural gas or fuel oil for heating. Most of those systems would need to be revamped to run on carbon-free electricity or renewable gas.  While New York City recently passed a law requiring its biggest skyscrapers to become more energy efficient, the new law could mean retrofitting thousands of buildings statewide. For building owners to just comply with the city's law, the estimated cost exceeded $4 billion. It's going to be a major lift,said Michael Gerrard, director of the Sabin Center for Climate Change Law at Columbia University.  He noted that technology to curb emissions from certain sectors, like cement plants or airplanes, is still in its infancy. To offset those sources, the state may have to pursue methods to remove carbon from the atmosphere, like tree-planting, wetlands restoration or carbon capture. If the measure becomes law, New York would join California, Colorado, Nevada, New Mexico and Washington, who have all passed bills aiming to get 100 percent of their electricity from carbon-free sources - such as wind, solar, hydropower dams and in some cases nuclear power - by midcentury or sooner.  In September, Jerry Brown, then the outgoing governor of California, signed an executive order that set a goal of making the entire state's economy carbon-neutral by 2045, though that has not been approved by the legislature.  Mr. Donohue, of the Independent Power Producers of New York, said that while the state's bill had some laudable goals,there were not a lot of details on how to get there. The bill, which was expected to come to a vote before the State Senate as early as Tuesday evening, is the latest and perhaps most far-reaching accomplishment for a newly elected Democratic majority in Albany, including a coterie of new progressive lawmakers for whom fighting climate change is a top priority.  The bill had previously passed the Democrat-dominated State Assembly on three occasions before bogging down in the Republican-led Senate. But November's blue wave changed the balance of power in Albany, even as climate activists began to demand action at the state level.  This is going to change the way every New Yorker lives,said state Senator Todd Kaminsky, the bill's sponsor in Albany's upper chamber. We are going to be deriving our power from clean energy sources, running our cars on renewable energy and going to work in buildings that do not emit carbon.It would also be the first major legislation from Representative Alexandria Ocasio-Cortez's home state to embrace elements of the Green New Deal, including that plan's emphasis on using environmental law to help low-income communities.  New York's bill would funnel hundreds of millions of dollars into economically disadvantaged areas around the state, particularly those that have been devastated by pollution and other industrial byproducts. For supporters, the bill added a measure of certainty that previous environmental orders by the governor did not. They don't live and die on the whims of an executive, said Peter M. Iwanowicz, executive director of Environmental Advocates of New York. The bill's passage would be the culmination of several years of activism by groups like New York Renews, a coalition of nearly 200 organizations, which repeatedly rallied in Albany and pushed policymakers to act. Those officials included Mr. Cuomo, who said earlier this month that he had doubts about climate legislation that put forward goals and dates that we cannot make.  In a radio interview on Tuesday, however, Mr. Cuomo called the negotiated bill the most aggressive climate change program in the United States of America, period. I think climate change is the issue of our lifetime, frankly, the governor, a third-term Democrat, said.And the legacy we leave our children.The bill codified several initiatives of Mr. Cuomo's from earlier this year into law, including greatly increasing New York's offshore wind goals, solar deployment and energy storage. Supporters said the mandates handed down would likely require a vast work force to weatherize homes, swap out furnaces and install solar panels, and build wind farms and other clean energy infrastructure.  This new law will spur the growth of green jobs across the state for decades,said Julie Tighe, the president of the New York League of Conservation Voters.  But Greg Biryla, the New York director of the National Federation of Independent Business, said the bill offered few details of how small companies, working on small margins, would rejigger their manufacturing and other operations.  There doesn't appear to be a fiscal impact statement for something that aims to completely reinvent our state's economy, he said, adding it would inevitably lead to companies migrating elsewhere. This just makes other states that much more attractive for investment.  The nuts and bolts of how to implement the plan would be left to a 22-person climate action council comprising top state officials, covering an array of topics like health, economic development, energy, labor and the environment, and advised by smaller working groups with expertise in everything from land use to forestry.  The council would be required to issue recommendations for how to meet the goals in two years, after which the state's regulatory agencies would issue rules to compel industries and residents to meet the standards outlined in the bill.    Alphonso David, the counsel to Mr. Cuomo, said that while the aggressive goals might lead to measures to curb gas-powered cars or inefficient furnaces, there was no knowing how exactly the state would get there.  There's new technology we are discovering every single day, said Mr. David. We may be talking about a very different world in terms of how we think about cars, how we think about airplanes and how we think about gasoline.")
+
+```
+###Article to be summarize
+```{r}
+document
+```
 
 ```{r, eval=FALSE}
 
 ####Training the model (This part will take time to be process so they are commented and a trained data is provided on github)
 
 
-train<- assign the article on which you want to traing your model
+train<- assign the article on which you want to train your model
 
 ###Cleaning the training document
 
@@ -49,17 +77,23 @@ tcm <- CreateTcm(doc_vec = movie_review$review,skipgram_window = 10,verbose = FA
 
 embeddings <- FitLdaModel(dtm = tcm,k = 100,iterations = 400,burnin = 180,alpha = 0.1,beta = 0.05,optimize_alpha = TRUE,calc_likelihood = FALSE,calc_coherence = FALSE,calc_r2 = FALSE,cpus = 2)
 
+
+####This is the matrix which is multiplied to Document term matrix of the given article
+
+###The usage is this matrix can be found on the subject of latent drichlet allocation.
 gamma<- embedding$gamma
 
 ```
 
 
+
 ###One function to summarize the article
 
-```{r, eval=FALSE}
+
+```{r}
 ####function for the summarizer
 
-summarizer2<-function(document, gamma,number_of_sentences) {
+summarizer2<-function(document,number_of_sentences) {
 
 #### cleaning the article
   
@@ -128,19 +162,24 @@ summarizer2<-function(document, gamma,number_of_sentences) {
   result <- st[ names(ev$vector)[ order(ev$vector, decreasing = TRUE)[ 1:a ] ] ]
   
   result <- result[ order(as.numeric(names(result))) ]
+  
   return(paste(result, collapse = " "))
+  
   
 }
 
 ```
 
+##Applying the function for 7 sentences.
+
+###Summarized article
+
+```{r}
+summarizer2(document,7)
+
+```
 
 
-##Usage
-### In function summarizer2 give 3 arguments
-### 1. Document>>  article that has to be summarized
-### 2. Gamma>>   The trained LDA model
-### 3. number_of_sentence>> number of sentences you want to summarize your article in
 
 
 
